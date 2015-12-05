@@ -1,0 +1,63 @@
+#title p{
+    font-family : Helvetica;
+    font-size : 30px;
+    margin: 0 auto;
+}
+
+#choro-map{
+
+     margin : 10px 0;
+    border : 1px solid black;
+}
+
+#controls{
+    width: 100%;
+    height:15%;
+    border : 1px solid black;
+    margin:10px 0;
+}
+
+#line-graph{
+   /* width : 99%;
+    height : 45%;*/
+    border : 1px solid black;
+    margin : 10px 0;
+    float:right;
+}
+.blank_map{
+    width:100%;
+}
+#ElectStat-title{
+    margin : 0 0 0 3px;
+    font-family:Helvetica;
+    font-size: 30px;
+}
+
+#YearSlider,#MonthSlider,#Source-checklist{
+    width:700px;
+    margin: 0 auto;
+}
+#Source-checklist div{
+    margin-left:auto;
+margin-right:auto;
+}
+label
+{
+    font-family:Helvetica;
+}
+.palette {
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: bottom;
+  margin: 4px 0 4px 6px;
+  padding: 4px;
+  background: #fff;
+  border: solid 1px #aaa;
+}
+
+.swatch {
+  display: block;
+  vertical-align: middle;
+  width: 37px;
+  height: 22px;
+}

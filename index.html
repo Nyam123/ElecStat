@@ -1,2 +1,113 @@
 <html>
+    <head> 
+        <title>ElecStat</title>
+        
+        <!--Scripts be here-->
+        <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+        <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+        <script type="application/javascript" src="/script/jquery-ui.min.js"></script>
+        <script type="application/javascript" src="/script/crossfilter.min.js"></script>
+        
+        <script type="application/javascript" src="/script/script.js"></script>
+        <script type="application/javascript" src="/script/jQAllRangeSliders-min.js"></script>
+        <script type="application/javascript" src="/script/Misc.js"></script>
+        
+        <!--Stylesheets-->
+        <link rel="stylesheet" href="/style/style.css"></link>
+        <link rel="stylesheet" href="/style/iThing-min.css"></link>
+
+    </head>
+    
+    
+<body>
+    <script>
+        //Basic init
+        var w=window.innerWidth; var h=window.innerHeight;
+        var svgWidth = w/2.09, svgHeight = h/1.3;
+        var svg = d3.select('body').attr("width",w).attr("height",h);
+        
+        //Title
+        svg.append('p').attr('id','ElectStat-title').text("ElectStat");
+        
+        //Choropleth map
+        var map = svg.append('svg').attr('id','choro-map').attr('class','svgclass').attr("width",svgWidth).attr('height',svgHeight).append('g');
+        d3.xml("Blank_US_Map.svg", "image/svg+xml", function(xml){
+            $('#choro-map g').append(xml.documentElement);
+            d3.select('#blank_map').attr("viewBox", "10 30 920 500");
+        });
+        map.selectAll(".palette")
+    .data(d3.entries(colorbrewer))
+  .enter().append("span")
+    .attr("class", "palette")
+    .attr("title", function(d) { return d.key; })
+    .on("click", function(d) { console.log(d3.values(d.value).map(JSON.stringify).join("\n")); })
+  .selectAll(".swatch")
+    .data(function(d) { return d.value[d3.keys(d.value).map(Number).sort(d3.descending)[0]]; })
+  .enter().append("span")
+    .attr("class", "swatch")
+    .style("background-color", function(d) { return d; });
+        //Line graph
+        var lineGraph = svg.append('svg').attr('id','line-graph').attr('class','svgclass').attr("width",svgWidth).attr('height',svgHeight).append('g');
+        
+        //Controls
+       // var controls = svg.append('svg').attr('id','controls').attr('class','svgclass').attr('width','100%').attr('height','100%').append('g');
+        //Doc ready
+       $(document).ready(function() {
+          $("#YearSlider").rangeSlider({bounds: {min: 2001, max: 2015}},{defaultValues:{min: 2005, max: 2010}});
+          $("#MonthSlider").rangeSlider(
+              {bounds: {min: 0, max: 11}},
+              {defaultValues:{min: 2, max: 5}},
+              {formatter:function(val){
+                  var value = Math.round(val);
+                  return months[value];
+                  console.log(value);
+              }}
+          );
+       });
+        //Doc end
+        
+        //Crossfilter
+        
+         d3.csv("Dataset-formatted.csv" , function(error, data){
+            // console.log(data);
+             var startYear = 1, endYear = 2, startMonth = "Jan",endMonth = "Dec",state="United States",filter="Coal";
+             var datafil = [];
+            datafil= datafilter(data,state,filter,startYear,endYear,startMonth,endMonth);
+             console.log(datafil);
+             var datesRequested = [];
+             datesRequested = generateStateFormat(startYear,endYear,startMonth,endMonth);
+             
+             var statesInData =[];
+             for(var state in data){
+                statesInData.push(data[state]['state']);
+             }
+            statesInData = unique(statesInData);
+            var choroData = [];
+             var total=0;
+             for(var state in statesInData){
+                  datafil= datafilter(data,statesInData[state],filter,startYear,endYear,startMonth,endMonth);
+             for(var value in datafil){
+                  if(isInArray(value,datesRequested))
+                    total += parseInt(datafil[value]);
+                    }
+                 choroData[statesInData[state]] = total;
+                 total = 0;
+              }
+             console.log(choroData);
+
+         }); 
+        
+        
+    </script>
+    <div id ="Source-checklist">
+        <div>
+            <input type="checkbox" name="GenTypes" value="Nuclear" /><label>Nuclear</label>
+            <input type="checkbox" name="GenTypes" value="Solar" /><label>Solar</label>
+            <input type="checkbox" name="GenTypes" value="Wind" /><label>Wind</label>
+            <input type="checkbox" name="GenTypes" value="Thermal" /><label>Thermal</label>
+        </div>
+    </div>
+    <div id="YearSlider"></div>
+    <div id="MonthSlider"></div>
+</body>
 </html>
